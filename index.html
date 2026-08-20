@@ -1,11 +1,589 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>My GitHub Page</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Master's Thesis on Continual Semantic Segmentation for Off-Road Robot Perception</title>
+<meta name="description" content="Master's thesis on incremental and continual learning for semantic segmentation">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+/* ---------- tokens ---------- */
+:root{
+  --ink:#14181c;
+  --ink-2:#3d464f;
+  --ink-3:#6b747d;
+  --paper:#fbfbf9;
+  --surface:#f1f3f0;
+  --rule:#dee2dc;
+  --accent:#179c7d;        /* Fraunhofer green */
+  --accent-deep:#0f6e58;
+  --clay:#b4653a;          /* used only for the forgetting baseline */
+  --measure:44rem;
+  --rail:8.5rem;
+  --gap:2.75rem;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink-2);
+  font-family:"IBM Plex Serif",Georgia,serif;
+  font-size:17px;
+  line-height:1.72;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;height:auto}
+a{color:var(--accent-deep);text-decoration:none;border-bottom:1px solid rgba(23,156,125,.35)}
+a:hover{border-bottom-color:var(--accent-deep)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+
+/* ---------- layout shell ---------- */
+.wrap{max-width:64rem;margin:0 auto;padding:0 1.5rem}
+.rule{border:0;border-top:1px solid var(--rule);margin:0}
+
+/* ---------- masthead ---------- */
+.masthead{padding:4.5rem 0 2.75rem}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-3);margin:0 0 1.5rem;
+}
+.eyebrow .dot{color:var(--accent);padding:0 .45em}
+h1{
+  font-family:"IBM Plex Sans",system-ui,sans-serif;
+  font-weight:600;
+  font-size:clamp(2.05rem,5.2vw,3.3rem);
+  line-height:1.09;
+  letter-spacing:-.028em;
+  color:var(--ink);
+  margin:0 0 1.15rem;
+  max-width:20ch;
+}
+.standfirst{
+  font-size:1.1rem;line-height:1.62;color:var(--ink-2);
+  max-width:var(--measure);margin:0 0 2.75rem;
+}
+.facts{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));
+  gap:1.5rem 2rem;border-top:1px solid var(--rule);padding-top:1.5rem;
+}
+.fact dt{
+  font-family:"IBM Plex Mono",monospace;font-size:.68rem;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);
+  margin:0 0 .35rem;
+}
+.fact dd{
+  margin:0;font-family:"IBM Plex Sans",sans-serif;
+  font-size:.95rem;line-height:1.45;color:var(--ink);
+}
+
+/* replace-me markers */
+.edit{
+  border-bottom:1px dotted var(--accent);
+  color:var(--ink);
+}
+
+/* ---------- sticky section nav ---------- */
+.tocbar{
+  position:sticky;top:0;z-index:20;
+  background:rgba(251,251,249,.93);
+  backdrop-filter:saturate(180%) blur(8px);
+  border-top:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);
+}
+.tocbar ol{
+  list-style:none;display:flex;gap:1.6rem;margin:0;padding:.7rem 0;
+  overflow-x:auto;scrollbar-width:none;
+}
+.tocbar ol::-webkit-scrollbar{display:none}
+.tocbar a{
+  font-family:"IBM Plex Mono",monospace;font-size:.7rem;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);white-space:nowrap;border-bottom:0;
+}
+.tocbar a:hover,.tocbar a[aria-current="true"]{color:var(--accent-deep)}
+.tocbar a .n{color:var(--rule);margin-right:.5em}
+.tocbar a:hover .n,.tocbar a[aria-current="true"] .n{color:var(--accent)}
+
+/* ---------- sections ---------- */
+.chapter{
+  display:grid;
+  grid-template-columns:var(--rail) minmax(0,1fr);
+  gap:0 var(--gap);
+  padding:3.5rem 0;
+  border-bottom:1px solid var(--rule);
+}
+.chapter:last-of-type{border-bottom:0}
+.chapter > .marker{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-3);padding-top:.45rem;
+}
+.chapter > .marker .num{
+  display:block;color:var(--accent);font-size:.95rem;
+  letter-spacing:.04em;margin-bottom:.3rem;
+}
+.body{max-width:var(--measure)}
+.body h2{
+  font-family:"IBM Plex Sans",sans-serif;font-weight:600;
+  font-size:clamp(1.3rem,2.4vw,1.65rem);line-height:1.25;
+  letter-spacing:-.02em;color:var(--ink);margin:0 0 1rem;
+}
+.body h3{
+  font-family:"IBM Plex Sans",sans-serif;font-weight:600;
+  font-size:1rem;letter-spacing:-.005em;color:var(--ink);
+  margin:2.25rem 0 .6rem;
+}
+.body p{margin:0 0 1.05rem}
+.body p:last-child{margin-bottom:0}
+.lead{font-size:1.06rem;color:var(--ink-2)}
+
+/* ---------- lists ---------- */
+.plain{list-style:none;margin:1.25rem 0 0;padding:0}
+.plain li{
+  padding:.85rem 0 .85rem 1.5rem;
+  border-top:1px solid var(--rule);
+  position:relative;
+}
+.plain li::before{
+  content:"";position:absolute;left:0;top:1.55rem;
+  width:.4rem;height:1px;background:var(--accent);
+}
+.plain li:last-child{border-bottom:1px solid var(--rule)}
+.plain strong{
+  font-family:"IBM Plex Sans",sans-serif;font-weight:600;
+  color:var(--ink);
+}
+
+/* ---------- pipeline strip ---------- */
+.pipeline{
+  display:flex;flex-wrap:wrap;align-items:stretch;gap:.5rem;
+  margin:1.75rem 0 .5rem;
+}
+.stage{
+  flex:1 1 8rem;background:var(--surface);
+  border-left:2px solid var(--accent);
+  padding:.8rem .9rem;
+}
+.stage .t{
+  display:block;font-family:"IBM Plex Mono",monospace;
+  font-size:.63rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-3);margin-bottom:.3rem;
+}
+.stage .v{
+  font-family:"IBM Plex Sans",sans-serif;font-weight:500;
+  font-size:.9rem;line-height:1.35;color:var(--ink);
+}
+
+/* ---------- figures ---------- */
+.fig{margin:2rem 0 0}
+.fig-wide{max-width:none}
+.frame{
+  background:var(--surface);
+  border:1px solid var(--rule);
+  min-height:11rem;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.frame img{display:none;width:100%}
+.frame.is-filled{display:block;min-height:0}
+.frame.is-filled img{display:block}
+.frame.is-filled .slot{display:none}
+.slot{
+  display:flex;flex-direction:column;align-items:center;gap:.4rem;
+  padding:2rem 1rem;text-align:center;
+  background-image:repeating-linear-gradient(45deg,transparent 0 9px,rgba(107,116,125,.07) 9px 10px);
+  width:100%;
+}
+.slot-file{
+  font-family:"IBM Plex Mono",monospace;font-size:.72rem;
+  color:var(--accent-deep);background:var(--paper);
+  padding:.2rem .5rem;border:1px solid var(--rule);
+}
+.slot-hint{
+  font-family:"IBM Plex Sans",sans-serif;font-size:.78rem;color:var(--ink-3);
+  max-width:26ch;line-height:1.4;
+}
+figcaption{
+  font-family:"IBM Plex Sans",sans-serif;
+  font-size:.8rem;line-height:1.5;color:var(--ink-3);
+  padding-top:.6rem;
+}
+figcaption b{
+  font-weight:600;color:var(--ink-2);
+  font-family:"IBM Plex Mono",monospace;font-size:.7rem;
+  letter-spacing:.08em;text-transform:uppercase;margin-right:.5em;
+}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+
+/* ---------- chart ---------- */
+.chart-card{
+  border:1px solid var(--rule);background:#fff;
+  padding:1.5rem 1.25rem 1.1rem;margin:1.9rem 0 0;
+}
+.chart-head{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.25rem;align-items:baseline;
+  margin-bottom:1.1rem;
+}
+.chart-title{
+  font-family:"IBM Plex Sans",sans-serif;font-weight:600;
+  font-size:.95rem;color:var(--ink);
+}
+.legend{display:flex;gap:1.1rem;margin-left:auto}
+.key{
+  font-family:"IBM Plex Mono",monospace;font-size:.68rem;
+  letter-spacing:.06em;color:var(--ink-3);
+  display:inline-flex;align-items:center;gap:.45rem;
+}
+.key i{width:1.1rem;height:2px;display:inline-block;background:var(--accent)}
+.key.baseline i{background:var(--clay)}
+.chart svg{display:block;width:100%;height:auto}
+.grid-line{stroke:var(--rule);stroke-width:1}
+.axis-text{
+  font-family:"IBM Plex Mono",monospace;font-size:9px;
+  fill:var(--ink-3);letter-spacing:.06em;
+}
+.series{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.series.now{stroke:var(--accent)}
+.series.base{stroke:var(--clay);stroke-dasharray:5 4}
+.node{stroke:#fff;stroke-width:1.5}
+.chart-note{
+  font-family:"IBM Plex Sans",sans-serif;font-size:.76rem;
+  color:var(--ink-3);margin:.9rem 0 0;line-height:1.5;
+}
+
+/* ---------- data table ---------- */
+.table-scroll{overflow-x:auto;margin:1.6rem 0 0}
+table{border-collapse:collapse;width:100%;min-width:30rem}
+caption{
+  text-align:left;font-family:"IBM Plex Mono",monospace;
+  font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-3);padding-bottom:.7rem;
+}
+th,td{
+  text-align:left;padding:.7rem .9rem .7rem 0;
+  border-bottom:1px solid var(--rule);vertical-align:top;
+}
+thead th{
+  font-family:"IBM Plex Mono",monospace;font-weight:400;
+  font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);border-bottom-color:var(--ink-3);
+}
+tbody th{
+  font-family:"IBM Plex Sans",sans-serif;font-weight:600;
+  font-size:.9rem;color:var(--ink);white-space:nowrap;
+}
+tbody td{font-size:.9rem;font-family:"IBM Plex Sans",sans-serif;line-height:1.5}
+
+/* ---------- footer ---------- */
+.colophon{padding:3rem 0 4.5rem;border-top:1px solid var(--rule)}
+.colophon p{
+  font-family:"IBM Plex Sans",sans-serif;font-size:.82rem;
+  color:var(--ink-3);margin:0 0 .5rem;max-width:var(--measure);
+}
+
+/* ---------- responsive ---------- */
+@media (max-width:860px){
+  :root{--gap:0}
+  .chapter{grid-template-columns:1fr;padding:2.75rem 0}
+  .chapter > .marker{padding:0 0 .9rem}
+  .chapter > .marker .num{display:inline;margin-right:.6rem}
+  .masthead{padding:3rem 0 2rem}
+}
+@media (max-width:560px){
+  body{font-size:16px}
+  .pair{grid-template-columns:1fr}
+  .pipeline{flex-direction:column}
+}
+
+/* ---------- motion & print ---------- */
+.tocbar a,.slot-file{transition:color .15s ease}
+@media print{
+  .tocbar{display:none}
+  body{background:#fff;font-size:11pt}
+  .chapter{break-inside:avoid;page-break-inside:avoid}
+}
+</style>
 </head>
+
 <body>
-  <h1>Hello, GitHub Pages works!</h1>
-  <p>This is my demo/thesis page.</p>
+
+<header class="masthead wrap">
+  <p class="eyebrow">Master's thesis<span class="dot">/</span>Fraunhofer IPA<span class="dot">/</span><span class="edit">2025 – 2026</span></p>
+  <h1>Continual semantic segmentation for off-road robot perception</h1>
+  <p class="standfirst">Incremental learning that lets the CurtMini platform keep adapting to new terrain, new classes and unseen objects.</p>
+
+  <dl class="facts">
+    <div class="fact"><dt>Author</dt><dd class="edit">Rashmi Ambale Gopalakrishna</dd></div>
+    <div class="fact"><dt>Supervisors</dt><dd class="edit">Natalia Melo Fernandez, Julia Hindel</dd></div>
+    <div class="fact"><dt>Host institute</dt><dd>Fraunhofer IPA, Stuttgart</dd></div>
+    <div class="fact"><dt>University</dt><dd class="edit">University of Freiburg</dd></div>
+    <div class="fact"><dt>Platforms</dt><dd>CurtMini &middot; CurTrac</dd></div>
+    <div class="fact"><dt>Datasets</dt><dd>GOOSE &middot; RUGD</dd></div>
+  </dl>
+</header>
+
+<nav class="tocbar" aria-label="Sections">
+  <div class="wrap">
+    <ol>
+      <li><a href="#problem"><span class="n">01</span>Problem</a></li>
+      <li><a href="#platforms"><span class="n">02</span>Platforms</a></li>
+      <li><a href="#method"><span class="n">03</span>Method</a></li>
+      <li><a href="#data"><span class="n">04</span>Datasets</a></li>
+      <li><a href="#deployment"><span class="n">05</span>Deployment</a></li>
+      <li><a href="#evaluation"><span class="n">06</span>Evaluation</a></li>
+    </ol>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- 01 -->
+  <section class="chapter" id="problem">
+    <div class="marker"><span class="num">01</span>Problem</div>
+    <div class="body">
+      <h2>A segmentation model which constantly adapts to new environments</h2>
+      <p class="lead">Outdoor robots operate in environments that keep changing. Seasons change the appearance of vegetation, sites introduce terrain the robot has never driven on, and sooner or later something appears in front of the camera that was not in any training set.</p>
+      <p>The standard answer is to retrain from scratch on the pooled data. The earlier data may no longer be available, labelling is expensive, and the compute budget is a single embedded module. Fine-tuning on the new data alone is cheap, but it overwrites the old task(catastrophic forgetting) and accuracy on previously learnt classes collapses.</p>
+
+      <div class="chart-card">
+        <div class="chart-head">
+          <span class="chart-title">Mean IoU across successive learning steps</span>
+          <span class="legend">
+            <span class="key baseline"><i></i>Fine-tuning</span>
+            <span class="key"><i></i>Continual</span>
+          </span>
+        </div>
+        <div class="chart" id="chart"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section class="chapter" id="platforms">
+    <div class="marker"><span class="num">02</span>Platforms</div>
+    <div class="body">
+      <h2>CurtMini as the development platform, CurTrac as the transfer target</h2>
+      <p>CurtMini is the smallest robot in the CURT family developed at Fraunhofer IPA. It is sold as an open research platform and is built to recognise different ground types, judge how traversable they are, and plan a route accordingly.</p>
+
+      <figure class="fig fig-wide">
+        <div class="frame">
+          <img src="assets/curtmini.jpg" alt="The CurtMini mobile robot on outdoor terrain"
+               onload="this.parentNode.classList.add('is-filled')" onerror="this.remove()">
+          <span class="slot">
+            <span class="slot-file">assets/curtmini.jpg</span>
+            <span class="slot-hint">Photo of CurtMini on terrain</span>
+          </span>
+        </div>
+        <figcaption><b>Fig. 1</b> CurtMini, the outdoor research platform used for development and on-board evaluation. <span class="edit">Photo: Fraunhofer IPA</span></figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section class="chapter" id="method">
+    <div class="marker"><span class="num">03</span>Method</div>
+    <div class="body">
+      <h2>A frozen foundation encoder and a light decoder</h2>
+      <p>Pretrained frozen DinoV3 provides visual features that generalise across scenes and seasons, and not need relearn at every step. An all-MLP head over multi-scale features (trainable) </p>
+      <p>Because the encoder stays largely fixed, drift is concentrated in the decoder, where it can be controlled by using prototype replay methods.</p>
+
+      <h3>What the method has to deliver</h3>
+      <ul class="plain">
+        <li><strong>Less forgetting.</strong> IoU on earlier classes stays close to its value at the step where those classes were learned.</li>
+        <li><strong>Real transfer.</strong> Later steps benefit from earlier ones instead of merely tolerating them.</li>
+        <li><strong>An honest unknown.</strong> Pixels that belong to nothing in the current label set are flagged rather than forced into the nearest class(open-world recognition).</li>
+        <li><strong>A fixed footprint.</strong> Limited number of prototype per class, no images stored in memory.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section class="chapter" id="data">
+    <div class="marker"><span class="num">04</span>Datasets</div>
+    <div class="body">
+      <h2>Datasets</h2>
+      <p>Off-road segmentation is harder: terrain classes have no crisp boundaries, a handful of classes such as vegetation, terrain and sky occupy most of the pixels(long tailed distribution), and the safety-relevant classes are the rare ones.</p>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Datasets used</caption>
+          <thead>
+            <tr><th scope="col">Dataset</th><th scope="col">Annotated frames</th><th scope="col">Classes</th><th scope="col">Character</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">GOOSE</th>
+              <td>10,000 RGB + LiDAR pairs</td>
+              <td>64 fine classes</td>
+              <td>German outdoor and off-road scenes; fine-grained taxonomy that also rolls up into coarse super-categories</td>
+            </tr>
+            <tr>
+              <th scope="row">RUGD</th>
+              <td>~7,400 frames, 18 sequences</td>
+              <td>24 classes</td>
+              <td>Small ground robot traversing trails, creeks, parks and villages; irregular boundaries and motion blur</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <figure class="fig fig-wide">
+        <div class="pair">
+          <div class="frame">
+            <img src="assets/goose-rgb.jpg" alt="GOOSE dataset RGB frame of an off-road scene"
+                 onload="this.parentNode.classList.add('is-filled')" onerror="this.remove()">
+            <span class="slot"><span class="slot-file">assets/goose-rgb.jpg</span><span class="slot-hint">GOOSE RGB frame</span></span>
+          </div>
+          <div class="frame">
+            <img src="assets/goose-label.png" alt="Matching GOOSE pixel-wise semantic annotation"
+                 onload="this.parentNode.classList.add('is-filled')" onerror="this.remove()">
+            <span class="slot"><span class="slot-file">assets/goose-label.png</span><span class="slot-hint">Matching semantic annotation</span></span>
+          </div>
+        </div>
+        <figcaption><b>Fig. 2</b> GOOSE sample: image and pixel-wise label map. <span class="edit">Source: GOOSE dataset, goose-dataset.de</span></figcaption>
+      </figure>
+
+      <figure class="fig fig-wide">
+        <div class="pair">
+          <div class="frame">
+            <img src="assets/rugd-rgb.png" alt="RUGD dataset frame from a small ground robot"
+                 onload="this.parentNode.classList.add('is-filled')" onerror="this.remove()">
+            <span class="slot"><span class="slot-file">assets/rugd-rgb.png</span><span class="slot-hint">RUGD RGB frame</span></span>
+          </div>
+          <div class="frame">
+            <img src="assets/rugd-label.png" alt="Matching RUGD pixel-wise semantic annotation"
+                 onload="this.parentNode.classList.add('is-filled')" onerror="this.remove()">
+            <span class="slot"><span class="slot-file">assets/rugd-label.png</span><span class="slot-hint">Matching semantic annotation</span></span>
+          </div>
+        </div>
+        <figcaption><b>Fig. 3</b> RUGD sample: image and pixel-wise label map. <span class="edit">Source: RUGD dataset, rugd.vision</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 05 -->
+  <section class="chapter" id="evaluation">
+    <div class="marker"><span class="num">05</span>Evaluation</div>
+    <div class="body">
+      <h2>Ablations across three kinds of incremental setting</h2>
+      
+      <div class="table-scroll">
+        <table>
+          <caption>Benchmark protocol</caption>
+          <thead>
+            <tr><th scope="col">Setting</th><th scope="col">What changes between steps</th><th scope="col">Reported</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Domain-incremental</th>
+              <td>Same classes, new environment, season or platform</td>
+              <td>mIoU per domain after each step; backward transfer</td>
+            </tr>
+            <tr>
+              <th scope="row">Class-incremental</th>
+              <td>New classes added to the existing label set</td>
+              <td>Old-class vs. new-class IoU; forgetting measure</td>
+            </tr>
+            <tr>
+              <th scope="row">Open-set / open-world</th>
+              <td>Objects outside the label set appear at inference</td>
+              <td>Unknown-region quality; accuracy after adopting a discovered class</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Ablated components</h3>
+      <ul class="plain">
+        <li><strong>Encoder choice and whether it is frozen.</strong> Isolates how much of the robustness comes from pretrained features rather than from the continual learning mechanism.</li>
+        <li><strong>Distillation, memory and constrained updates.</strong> Each removed in turn to attribute the retained IoU to a specific component.</li>
+        <li><strong>Step ordering and step size.</strong> Tests whether the result depends on a favourable curriculum.</li>
+        <li><strong>On-device cost.</strong> Latency, peak memory and update time measured on the Jetson AGX Orin.</li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<footer class="colophon wrap">
+  <p>Master's thesis carried out at Fraunhofer IPA, Stuttgart. Robot platforms: CURT_robotics. Benchmarks: GOOSE (Fraunhofer IOSB / UniBw Munich) and RUGD (US Army Research Laboratory).</p>
+  <p>Last updated <span class="edit">August 2026</span> &middot; <a class="edit" href="mailto:rashmiag.99@gmail.com">rashmiag.99@gmail.com</a></p>
+</footer>
+
+<script>
+/* ---- Edit these numbers to plot your own results. ---- */
+const STEPS  = ["Step 1", "Step 2", "Step 3", "Step 4", "Step 5"];
+const SERIES = {
+  base: [72, 58, 47, 39, 34],   // fine-tuning baseline
+  now:  [72, 69, 67, 65, 64]    // continual method
+};
+const Y_MIN = 25, Y_MAX = 80;
+
+(function drawChart(){
+  const host = document.getElementById("chart");
+  if (!host) return;
+
+  const W = 700, H = 260, L = 42, R = 14, T = 14, B = 30;
+  const px = i => L + i * (W - L - R) / (STEPS.length - 1);
+  const py = v => T + (Y_MAX - v) * (H - T - B) / (Y_MAX - Y_MIN);
+  const path = arr => arr.map((v, i) => (i ? "L" : "M") + px(i).toFixed(1) + " " + py(v).toFixed(1)).join(" ");
+
+  let g = "";
+  for (let v = Y_MIN; v <= Y_MAX; v += 11){
+    g += `<line class="grid-line" x1="${L}" y1="${py(v).toFixed(1)}" x2="${W - R}" y2="${py(v).toFixed(1)}"/>`
+       + `<text class="axis-text" x="${L - 8}" y="${(py(v) + 3).toFixed(1)}" text-anchor="end">${v}</text>`;
+  }
+  STEPS.forEach((s, i) => {
+    g += `<text class="axis-text" x="${px(i).toFixed(1)}" y="${H - 8}" text-anchor="middle">${s.toUpperCase()}</text>`;
+  });
+
+  const dots = (arr, cls) => arr.map((v, i) =>
+    `<circle class="node" cx="${px(i).toFixed(1)}" cy="${py(v).toFixed(1)}" r="3.2" fill="var(--${cls})"/>`).join("");
+
+  host.innerHTML =
+    `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Mean IoU over ${STEPS.length} learning steps: fine-tuning declines from ${SERIES.base[0]} to ${SERIES.base.at(-1)}, the continual method holds near ${SERIES.now.at(-1)}.">
+      <text class="axis-text" x="${L - 8}" y="${T - 3}" text-anchor="end">mIoU</text>
+      ${g}
+      <path class="series base" d="${path(SERIES.base)}"/>
+      <path class="series now"  d="${path(SERIES.now)}"/>
+      ${dots(SERIES.base, "clay")}
+      ${dots(SERIES.now, "accent")}
+    </svg>`;
+
+  // draw the continual-method line in once, on load
+  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+    const line = host.querySelector(".series.now");
+    const len = line.getTotalLength();
+    line.style.strokeDasharray = len;
+    line.style.strokeDashoffset = len;
+    line.getBoundingClientRect();                       // force reflow
+    line.style.transition = "stroke-dashoffset .9s ease-out";
+    line.style.strokeDashoffset = "0";
+  }
+})();
+
+/* ---- highlight the section currently in view ---- */
+(function trackSections(){
+  const links = [...document.querySelectorAll(".tocbar a")];
+  const map = new Map(links.map(a => [a.getAttribute("href").slice(1), a]));
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      const a = map.get(e.target.id);
+      if (a && e.isIntersecting){
+        links.forEach(l => l.removeAttribute("aria-current"));
+        a.setAttribute("aria-current", "true");
+      }
+    });
+  }, { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll(".chapter").forEach(s => obs.observe(s));
+})();
+</script>
+
 </body>
 </html>
